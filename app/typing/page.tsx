@@ -1,15 +1,16 @@
 // app/typing/page.tsx
 'use client';
 import Link from 'next/link';
-import React, {useState} from 'react';
+import { useState } from 'react';
+import AcidRain from './산성비'; // 산성비 컴포넌트 import
+import ResourceMining from './자원캐기'; // 자원캐기 컴포넌트 import
 
 export default function TypingPage() {
-
   const [gameMode, setGameMode] = useState('');
 
-    const handleGameModeChange = (mode) => {
-        setGameMode(mode)
-    }
+  const handleGameModeChange = (mode: string) => {
+    setGameMode(mode);
+  };
 
   return (
     <div>
@@ -29,37 +30,21 @@ export default function TypingPage() {
             <Link href="/typing/긴글연습">긴 글 연습</Link>
           </li>
           <li>
-            {/* <Link href="/typing/산성비">산성비</Link> */}
-            <button type='button' onClick={()=>handleGameModeChange('산성비')}>산성비</button>
+            <button type="button" onClick={() => handleGameModeChange('산성비')}>
+              산성비
+            </button>
           </li>
           <li>
-            {/* <Link href="/typing/자원캐기">자원캐기</Link> */}
-            <button type='button' onClick={()=>handleGameModeChange('자원캐기')}>자원캐기</button>
-
+            <button type="button" onClick={() => handleGameModeChange('자원캐기')}>
+              자원캐기
+            </button>
           </li>
         </ul>
       </nav>
+
+      {/* 게임 모드에 따라 컴포넌트 렌더링 */}
       {gameMode === '산성비' && <AcidRain />}
       {gameMode === '자원캐기' && <ResourceMining />}
     </div>
   );
-}
-
-function AcidRain() {
-    return(
-        <div>
-            <h2>산성비</h2>
-            <p>산성비 게임 컴포넌트가 여기에 들어갑니다.</p>
-
-        </div>
-    )
-}
-
-function ResourceMining() {
-    return (
-        <div>
-             <h2>자원캐기</h2>
-            <p>자원캐기 게임 컴포넌트가 여기에 들어갑니다.</p>
-        </div>
-    )
 }
