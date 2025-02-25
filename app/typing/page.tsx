@@ -1,9 +1,8 @@
-// app/typing/page.tsx
-'use client';
+'use client'
 import Link from 'next/link';
 import { useState } from 'react';
-import AcidRain from './산성비'; // 산성비 컴포넌트 import
-import ResourceMining from './자원캐기'; // 자원캐기 컴포넌트 import
+import AcidRain from './산성비/page';
+import ResourceMining from './자원캐기/page';
 
 export default function TypingPage() {
   const [gameMode, setGameMode] = useState('');
@@ -41,8 +40,6 @@ export default function TypingPage() {
           </li>
         </ul>
       </nav>
-
-      {/* 게임 모드에 따라 컴포넌트 렌더링 */}
       {gameMode === '산성비' && <AcidRain />}
       {gameMode === '자원캐기' && <ResourceMining />}
     </div>
