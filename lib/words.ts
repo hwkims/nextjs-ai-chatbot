@@ -1,57 +1,100 @@
-// lib/words.ts
+import client from './mistral-client';
 
-const 자리연습_한글_1단계 = "ㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㄹㄹㄹㄹㄹㄹㄹㄹㄹㄹ";
-const 자리연습_한글_2단계 = "ㅗㅗㅗㅗㅗㅗㅗㅗㅗㅗㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣ";
-// ... 다른 단계의 텍스트
-
-const 자리연습_영문_1단계 = "aaaaaaaaaassssssssssddddddddddffffffffff";
-// ... 다른 단계의 텍스트
-
-const 낱말연습_한글 = ['나무', '바다', '하늘', '사랑', '행복', ...];
-// ...
-
-const 짧은글연습_한글 = ['동해 물과 백두산이 마르고 닳도록...', '간장 공장 공장장은 강 공장장이고...', ...];
-// ...
-
-const 긴글연습_한글 = ['메밀꽃 필 무렵...', '어린왕자...', ...];
-// ...
-const 산성비_단어 = ['사과', '바나나', '오렌지', '포도', '수박' ...];
-const 자원캐기_단어 = ['컴퓨터', '키보드', '마우스', '모니터', '프린터' ...];
-
-export function getPracticeText(
+export async function generatePracticeText(
   type: '자리' | '낱말' | '짧은글' | '긴글',
   layout: 'ko' | 'en',
-  level?: number, // 자리 연습 단계 (선택 사항)
-): string | string[] { // string 또는 string 배열 반환
+  level?: number,
+): Promise<string | string[]> {
   if (type === '자리') {
     if (layout === 'ko') {
-      if (level === 1) {
-        return 자리연습_한글_1단계;
-      } else if (level === 2) {
-        return 자리연습_한글_2단계;
+      const prompt = `한글 자판 연습을 위한 ${level}단계 ${level * 10}개의 자음과 모음 조합을 생성해줘.`;
+      try {
+        const chatResponse = await client.chat.complete({
+          model: 'mistral-small',
+          messages: [{ role: 'user', content: prompt }],
+        });
+        const generatedText = chatResponse.choices[0].message.content;
+        return generatedText || "기본 텍스트";
+      } catch (error) {
+        console.error("Error generating text:", error);
+        return "기본 텍스트";
       }
-      // ... 다른 단계 처리
-      return 자리연습_한글_1단계
     } else if (layout === 'en') {
-      if (level === 1) {
-          return 자리연습_영문_1단계
-      }
-      return 자리연습_영문_1단계; // 기본값
+      const prompt = `영문 자판 연습을 위한 ${level}단계, 10개의 알파벳 조합을 생성해줘.`;
+        try {
+            const chatResponse = await client.chat.complete({
+              model: 'mistral-small',
+              messages: [{ role: 'user', content: prompt }],
+            });
+            const generatedText = chatResponse.choices[0].message.content;
+            return generatedText || "default text";
+
+        } catch (error) {
+          console.error("Error generating text:", error);
+          return "default text";
+        }
     }
   } else if (type === '낱말') {
-    return 낱말연습_한글; // 낱말 연습은 단계 없음 (배열 반환)
+    const prompt = `타자 연습을 위한 10개의 쉬운 한글 단어를 생성해줘.`;
+    try {
+      const chatResponse = await client.chat.complete({
+        model: 'mistral-small',
+        messages: [{ role: 'user', content: prompt }],
+      });
+      const generatedText = chatResponse.choices[0].message.content;
+      return generatedText ? generatedText.split("\n").filter(item => !!item).map(item=>item.replace(/[0-9.]/g, '').trim()) : ["기본단어1", "기본단어2"];
+
+    } catch (error) {
+      console.error("Error generating text:", error);
+      return ["기본단어1", "기본단어2"];
+    }
+
   } else if (type === '짧은글') {
-    return 짧은글연습_한글;
+    const prompt = `타자 연습을 위한 1개의 짧은 한국어 문장을 생성해줘.`;
+    try {
+      const chatResponse = await client.chat.complete({
+        model: 'mistral-small',
+        messages: [{ role: 'user', content: prompt }],
+      });
+
+      const generatedText = chatResponse.choices[0].message.content;
+      return generatedText ? [generatedText] : ["기본 문장"];
+
+    } catch (error) {
+      console.error("Error generating text:", error);
+      return ["기본 문장"];
+    }
   } else if (type === '긴글') {
-    return 긴글연습_한글;
+    const prompt = `타자 연습을 위한 5개의 쉬운 한국어 문장으로 구성된 문단을 생성해줘.`;
+    try {
+      const chatResponse = await client.chat.complete({
+        model: 'mistral-small',
+        messages: [{ role: 'user', content: prompt }],
+      });
+      const generatedText = chatResponse.choices[0].message.content;
+      return generatedText ? [generatedText] : ["기본 긴 글"];
+
+    } catch (error) {
+      console.error("Error generating text:", error);
+      return ["기본 긴 글"];
+    }
   }
-  return ''; // 기본값
+  return '';
 }
 
-export function getGameWords(game: '산성비' | '자원캐기'): string[] {
-    if(game === '산성비') {
-        return 산성비_단어
-    } else {
-        return 자원캐기_단어
-    }
+export async function getGameWords(game: '산성비' | '자원캐기'): Promise<string[]> {
+    const prompt = `타자 게임을 위한 20개의 단어를 생성해줘.`;
+     try {
+            const chatResponse = await client.chat.complete({
+              model: 'mistral-small',
+              messages: [{ role: 'user', content: prompt }],
+            });
+
+            const generatedText = chatResponse.choices[0].message.content;
+            return generatedText ? generatedText.split("\n").filter(item => !!item).map(item=>item.replace(/[0-9.]/g, '').trim()) : ["기본단어1", "기본단어2"];
+
+        } catch (error) {
+          console.error("Error generating text:", error);
+          return ["기본단어1", "기본단어2"];
+        }
 }
