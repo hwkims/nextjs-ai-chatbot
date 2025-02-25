@@ -1,11 +1,10 @@
-// components/Keyboard.tsx
 'use client';
 import React, { useState, useEffect } from 'react';
 
 interface Props {
-  currentKey: string; // 현재 입력해야 할 키
-  layout: 'ko' | 'en'; // 한글/영문 자판 배열 ('ko' = 두벌식, 'en' = QWERTY)
-  onKeyPress: (key: string) => void; // 키 입력 시 호출되는 콜백
+    currentKey: string;
+    layout: 'ko' | 'en';
+    onKeyPress: (key: string) => void;
 }
 
 const keyLayouts = {
@@ -25,52 +24,40 @@ const keyLayouts = {
     ]
 };
 
-
-
 function Keyboard({ currentKey, layout, onKeyPress }: Props) {
-
     const [pressedKey, setPressedKey] = useState('');
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             const key = event.key;
-            setPressedKey(key); // 눌린 키 상태 업데이트
-            onKeyPress(key); // 눌린 키를 부모 컴포넌트에 알림
-            console.log("key", key)
+            setPressedKey(key);
+            onKeyPress(key);
         };
-
 
         window.addEventListener('keydown', handleKeyDown);
 
-
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
-
         };
-    }, [onKeyPress]); // onKeyPress가 변경될 때만 useEffect 다시 실행
+    }, [onKeyPress]);
 
-
-     useEffect(() => {
-        // 키 눌림 효과 제거 (0.1초 후)
+    useEffect(() => {
         const timer = setTimeout(() => {
             setPressedKey('');
         }, 100);
-
-        return () => clearTimeout(timer); // cleanup 함수
+        return () => clearTimeout(timer);
     }, [pressedKey]);
 
-  const renderKeys = () => {
+    const renderKeys = () => {
         return keyLayouts[layout].map((row, rowIndex) => (
             <div key={`row-${rowIndex}`} className="keyboard-row">
                 {row.map((key) => {
                     const isCurrentKey = key === currentKey;
-                    const isPressed = key === pressedKey; // 눌린 키인지 확인
+                    const isPressed = key === pressedKey;
                     return (
                         <button
                             key={key}
-                            className={`key ${isCurrentKey ? 'current-key' : ''} ${isPressed ? 'pressed-key' : ''
-                                }`}
-                            // onClick={() => onKeyPress(key)} // 클릭 이벤트 제거
+                            className={`key ${isCurrentKey ? 'current-key' : ''} ${isPressed ? 'pressed-key' : ''}`}
                             disabled={key.length > 1}
                         >
                             {key}
@@ -81,24 +68,21 @@ function Keyboard({ currentKey, layout, onKeyPress }: Props) {
         ));
     };
 
-  return (
-    <div className="keyboard">
-        {renderKeys()}
-        <style jsx>{`
+    return (
+        <div className="keyboard">
+            {renderKeys()}
+            <style jsx>{`
         .keyboard {
-          /* 키보드 전체 스타일 */
           background-color: #f0f0f0;
           border: 1px solid #ccc;
           padding: 10px;
           display: inline-block;
         }
         .keyboard-row {
-          /* 키보드 행 스타일 */
           display: flex;
           margin-bottom: 5px;
         }
         .key {
-          /* 키 스타일 (일반) */
           width: 40px;
           height: 40px;
           border: 1px solid #aaa;
@@ -114,18 +98,15 @@ function Keyboard({ currentKey, layout, onKeyPress }: Props) {
             cursor: default;
         }
         .current-key {
-          /* 현재 입력해야 할 키 스타일 */
-          background-color: #ffcc00; /* 노란색 배경 */
+          background-color: #ffcc00;
           color: #000;
         }
-
         .pressed-key {
             background-color: #a0a0a0
         }
-
       `}</style>
-    </div>
-  )
+        </div>
+    )
 }
 
 export default Keyboard;
